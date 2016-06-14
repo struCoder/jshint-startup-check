@@ -1,0 +1,28 @@
+{
+  "name": "jshint-startup-check",
+  "version": "1.0.0",
+  "description": "check your code when nodejs project is startuping",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/struCoder/jshint-startup-check.git"
+  },
+  "keywords": [
+    "jshint",
+    "checkCode",
+    "startup"
+  ],
+  "author": "strucoder <zdwloveschina@gmail.com> (http://www.strucoder.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/struCoder/jshint-startup-check/issues"
+  },
+  "homepage": "https://github.com/struCoder/jshint-startup-check#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "jshint": "^2.9.2"
+  }
+}
