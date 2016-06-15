@@ -37,11 +37,11 @@ const http = require('http');
 const jshintCheck = require('jshint-startup-check');
 
 const myCheckConfig = {
-  jshintrc: {},
-  jshintignore: ['node_modules', '.git'],
-  maxError: 5000,
-  showScanFile: true,
-  env: 'your project env' // in production env will not check
+  jshintrc: {},                                   // option
+  jshintignore: ['node_modules', '.git'],         // option
+  maxError: 5000,                                 // option
+  showScanFile: true,                             // option
+  env: 'your project env' // in production env will not check (option)
 };
 
 // check function first argument is an array that can be directories or files in your project
