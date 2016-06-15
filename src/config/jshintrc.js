@@ -5,7 +5,7 @@ module.exports = {
   // JSHint Default Configuration File (as on JSHint website)
   // See http://jshint.com/docs/ for more details
 
-  "maxerr"        : 50,       // {int} Maximum error before stopping
+  "maxerr"        : 5000000,       // {int} Maximum error before stopping
 
   // Enforcing
   "bitwise"       : true,     // true: Prohibit bitwise operators (&, |, ^, etc.)

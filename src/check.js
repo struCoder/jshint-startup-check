@@ -28,22 +28,42 @@ let Check = module.exports;
 // get project path
 Check.projectPath = path.resolve(__dirname, '../../..');
 
+// count totalErrors
+Check.totalErrors = 0;
+
 Check.isAllProject = false;
 
-// 如果checkPathArr 为空那么就检查当前项目目录下除了node_modules的所有js文件
-//options: {
-//   jshintrc: {},
-//   jshintignore: []
-// }
+Check.isJsReg = /\w.*\.js/;
 
 Check._calculate = function(errorsArr) {
+  let i = errorsArr.length;
+  let filePathErrorMap = {};
+  while (i--) {
+    if(!filePathErrorMap[errorsArr[i].file]) {
+      filePathErrorMap[errorsArr[i].file] = [];
+    }
+    filePathErrorMap[errorsArr[i].file].push(`line ${errorsArr[i].line},`, `col ${errorsArr[i].character},`,`reason ${errorsArr[i].reason}\n`)
+  }
+
+  let showStr = '';
+  let filePathArr = Object.keys(filePathErrorMap);
+  let j = filePathArr.length;
+  while (j--) {
+    let currentErrorArr = filePathErrorMap[filePathArr[j]];
+    showStr += `\n ${Colors.error(filePathArr[j])}\n ${currentErrorArr.join(' ')}`
+  };
+  return showStr;
 
 };
 
 Check._jshint = function(source, options, currentFile) {
+  if(this.totalErrors > this.options.maxError) {
+    throw new Error('too many errors, please check you code.');
+  }
   Jshint(source, options.jshintrc);
   let errorsArr = Jshint.errors;
   let i = errorsArr.length;
+  this.totalErrors += i;
   // attach file to errors;
   while (i--) {
     errorsArr[i].file = currentFile;
@@ -53,7 +73,10 @@ Check._jshint = function(source, options, currentFile) {
 
 Check._defaultOptions = {
   jshintrc: jshintrc,
-  jshintignore: ['node_modules']
+  jshintignore: ['node_modules', '.git'],
+  maxError: 5000,
+  showScanFile: true,
+  env: process.env.NODE_ENV || 'development'
 };
 
 Check.errorsRet = [];
@@ -65,14 +88,18 @@ Check._readFile = function(filePath) {
     let _filePath = path.join(filePath, files[i]);
     let fileStats = fs.statSync(_filePath);
     if(fileStats.isDirectory()) {
-      if(this.options.jshintignore.indexOf(files) !== -1) {
+      if(this.options.jshintignore.indexOf(files[i]) !== -1) {
         continue;
       }
       this._readFile(_filePath)
     }
-    else if(fileStats.isFile()) {
+
+    // just file and javascript file
+    else if(fileStats.isFile() && this.isJsReg.test(files[i])) {
       let codeSource = fs.readFileSync(_filePath, 'utf8');
-      // console.log('read file:', filePath);
+      if(this.options.showScanFile) {
+        console.log(Colors.info('read file:'), Colors.data(_filePath));
+      }
       this.errorsRet = this.errorsRet.concat(this._jshint(codeSource, this.options, _filePath));
     }
   }
@@ -82,9 +109,15 @@ Check.check = function(checkPathArr, options) {
   if(!Array.isArray(checkPathArr)) {
     throw new Error('checkPathArr must be an array');
   }
-  console.log(Colors.warn('checking your javascript code...'));
   options = options || {};
   this.options = extend(this._defaultOptions, options);
+
+  // do not check code in production env
+  if(this.options.env === 'production'){
+    return;
+  }
+
+  console.log(Colors.verbose('checking your javascript code...'));
   let _checkPathArr = [];
   let pathArrLen = checkPathArr.length;
   if(pathArrLen === 0) {
@@ -101,6 +134,7 @@ Check.check = function(checkPathArr, options) {
   }
 
   let endTime = Date.now();
-  // console.log(this.errorsRet);
+  console.log(Colors.data(this._calculate(this.errorsRet)));
   console.log(Colors.prompt('time:'), Colors.info(endTime - startTime), 'ms');
+  this.totalErrors = 0;  // reset
 };
