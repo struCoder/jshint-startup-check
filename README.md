@@ -52,3 +52,4 @@ jshintCheck.check(['/src/api/v2'], myCheckConfig);
 const server = http.createServer(app);
 
 ```
+[jshintrc config](https://github.com/jshint/jshint/blob/master/examples/.jshintrc)
