@@ -35,8 +35,20 @@ Check.isAllProject = false;
 //   jshintrc: {},
 //   jshintignore: []
 // }
-Check._jshint = function(source, options) {
 
+Check._calculate = function(errorsArr) {
+
+};
+
+Check._jshint = function(source, options, currentFile) {
+  Jshint(source, options.jshintrc);
+  let errorsArr = Jshint.errors;
+  let i = errorsArr.length;
+  // attach file to errors;
+  while (i--) {
+    errorsArr[i].file = currentFile;
+  }
+  return errorsArr;
 };
 
 Check._defaultOptions = {
@@ -44,51 +56,51 @@ Check._defaultOptions = {
   jshintignore: ['node_modules']
 };
 
+Check.errorsRet = [];
 
-Check._readFile = function(path) {
-  let files = fs.readdirSync(this.projectPath);
+Check._readFile = function(filePath) {
+  let files = fs.readdirSync(filePath);
   let filesLen = files.length;
   for(let i = 0; i < filesLen; i++) {
-    let filePath = path.join(path, files[i]);
-    let fileStats = fs.statSync(filePath);
+    let _filePath = path.join(filePath, files[i]);
+    let fileStats = fs.statSync(_filePath);
     if(fileStats.isDirectory()) {
       if(this.options.jshintignore.indexOf(files) !== -1) {
         continue;
       }
-      this._readFile(filePath)
+      this._readFile(_filePath)
     }
     else if(fileStats.isFile()) {
-      let codeSource = fs.readFileSync(filePath, 'utf8');
-      this._jshint(codeSource, this.options);
+      let codeSource = fs.readFileSync(_filePath, 'utf8');
+      // console.log('read file:', filePath);
+      this.errorsRet = this.errorsRet.concat(this._jshint(codeSource, this.options, _filePath));
     }
   }
 };
 
-Check.check = function(checkPathArr, options, predef) {
+Check.check = function(checkPathArr, options) {
+  if(!Array.isArray(checkPathArr)) {
+    throw new Error('checkPathArr must be an array');
+  }
+  console.log(Colors.warn('checking your javascript code...'));
+  options = options || {};
   this.options = extend(this._defaultOptions, options);
   let _checkPathArr = [];
   let pathArrLen = checkPathArr.length;
   if(pathArrLen === 0) {
-    Check.isAllProject = true;
-    _checkPathArr.push(this.projectPath);
+    this.isAllProject = true;
   }
   let startTime = Date.now();
   if(this.isAllProject) {
-    let files = fs.readdirSync(this.projectPath);
-
+    this._readFile(this.projectPath);
   }
   else {
-
+    for(let i = 0; i < checkPathArr.length; i++) {
+      this._readFile(path.join(this.projectPath, checkPathArr[i]));
+    }
   }
 
-
-
-  Jshint(source, options, predef);
-
-  console.log(Jshint.data());
   let endTime = Date.now();
-  console.log(Colors.info(endTime - startTime));
+  // console.log(this.errorsRet);
+  console.log(Colors.prompt('time:'), Colors.info(endTime - startTime), 'ms');
 };
-
-console.log(Check.projectPath);
-Check.Jshint()

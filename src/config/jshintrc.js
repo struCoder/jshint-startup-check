@@ -69,6 +69,7 @@ module.exports = {
 
   // Environments
   "browser"       : true,     // Web Browser (window, document, etc)
+  "node"          : true,
 
   // Custom Globals
   "globals"       : {}        // additional predefined global variables

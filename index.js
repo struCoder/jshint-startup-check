@@ -1,3 +1,3 @@
 'use strict';
 
-require('./src/check');
+module.exports = require('./src/check');
