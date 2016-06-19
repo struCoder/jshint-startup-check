@@ -84,7 +84,9 @@ Check.check = function(checkPathArr, options) {
   }
   console.log(Colors.warn('checking your javascript code...'));
   options = options || {};
-  this.options = extend(this._defaultOptions, options);
+  this.options = {};
+  this.options.jshintrc = extend(this._defaultOptions.jshintrc, options.jshintrc);
+  this.options.jshintignore = options.jshintignore || this._defaultOptions.jshintignore;
   let _checkPathArr = [];
   let pathArrLen = checkPathArr.length;
   if(pathArrLen === 0) {
