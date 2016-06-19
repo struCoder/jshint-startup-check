@@ -5,7 +5,7 @@ module.exports = {
   // JSHint Default Configuration File (as on JSHint website)
   // See http://jshint.com/docs/ for more details
 
-  "maxerr"        : 50,       // {int} Maximum error before stopping
+  "maxerr"        : 5000000,       // {int} Maximum error before stopping
 
   // Enforcing
   "bitwise"       : true,     // true: Prohibit bitwise operators (&, |, ^, etc.)
@@ -41,7 +41,7 @@ module.exports = {
   "varstmt"       : false,    // true: Disallow any var statements. Only `let` and `const` are allowed.
 
   // Relaxing
-  "asi"           : false,     // true: Tolerate Automatic Semicolon Insertion (no semicolons)
+  "asi"           : true,     // true: Tolerate Automatic Semicolon Insertion (no semicolons)
   "boss"          : true,     // true: Tolerate assignments where comparisons would be expected
   "debug"         : false,     // true: Allow debugger statements e.g. browser breakpoints.
   "eqnull"        : true,     // true: Tolerate use of `== null`
