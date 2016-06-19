@@ -50,7 +50,7 @@ Check._calculate = function(errorsArr) {
   let j = filePathArr.length;
   while (j--) {
     let currentErrorArr = filePathErrorMap[filePathArr[j]];
-    showStr += `\n ${Colors.error(filePathArr[j])}\n ${currentErrorArr.join(' ')}`
+    showStr += `\n ${Colors.error(filePathArr[j])}\n ${currentErrorArr.join(' ')}${Colors.info('errors')}: ${Colors.info(currentErrorArr.length / 3)}\n`
   };
   return showStr;
 
@@ -110,7 +110,9 @@ Check.check = function(checkPathArr, options) {
     throw new Error('checkPathArr must be an array');
   }
   options = options || {};
-  this.options = extend(this._defaultOptions, options);
+  this.options = {};
+  this.options.jshintrc = extend(this._defaultOptions.jshintrc, options.jshintrc);
+  this.options.jshintignore = options.jshintignore || this._defaultOptions.jshintignore;
 
   // do not check code in production env
   if(this.options.env === 'production'){
